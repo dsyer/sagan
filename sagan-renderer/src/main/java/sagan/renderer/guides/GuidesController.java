@@ -47,7 +47,7 @@ public class GuidesController {
 		return ResponseEntity.notFound().build();
 	}
 
-	@GetMapping("/")
+	@GetMapping({"", "/"})
 	public Resources<GuideResource> listGuides() {
 		List<GuideResource> guideResources = this.guideAssembler
 				.toResources(this.githubClient.fetchOrgRepositories(properties.getGuides().getOrganization()))
