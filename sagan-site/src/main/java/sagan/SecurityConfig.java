@@ -77,15 +77,12 @@ class SecurityConfig {
 
         private static final String USER = "X-User";
 
-        private static final String TOKEN = "X-Token";
-
         Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
                 throws AuthenticationException, IOException, ServletException {
             String user = request.getHeader(USER);
             if (user != null) {
-                String token = request.getHeader(TOKEN);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user,
-                        token,
+                        "",
                         AuthorityUtils.createAuthorityList("ROLE_USER"));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }

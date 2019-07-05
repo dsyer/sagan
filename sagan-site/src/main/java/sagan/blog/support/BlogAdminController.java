@@ -1,9 +1,5 @@
 package sagan.blog.support;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import sagan.blog.Post;
 import sagan.blog.PostCategory;
 import sagan.blog.PostFormat;
@@ -12,8 +8,6 @@ import sagan.site.blog.PostForm;
 import sagan.support.DateFactory;
 import sagan.support.nav.PageableFactory;
 import sagan.support.nav.PaginationInfo;
-import sagan.team.MemberProfile;
-import sagan.team.support.TeamRepository;
 
 import java.security.Principal;
 import java.util.Collections;
@@ -22,11 +16,15 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
@@ -40,13 +38,11 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 class BlogAdminController {
 
     private BlogService service;
-    private TeamRepository teamRepository;
     private DateFactory dateFactory;
 
     @Autowired
-    public BlogAdminController(BlogService service, TeamRepository teamRepository, DateFactory dateFactory) {
+    public BlogAdminController(BlogService service, DateFactory dateFactory) {
         this.service = service;
-        this.teamRepository = teamRepository;
         this.dateFactory = dateFactory;
     }
 
@@ -103,9 +99,8 @@ class BlogAdminController {
             model.addAttribute("formats", PostFormat.values());
             return "admin/blog/new";
         } else {
-            MemberProfile memberProfile = teamRepository.findById(new Long(principal.getName()));
             try {
-                Post post = service.addPost(postForm, memberProfile.getUsername());
+                Post post = service.addPost(postForm, principal.getName());
                 PostView postView = PostView.of(post, dateFactory);
                 return "redirect:" + postView.getPath() + "/edit";
             } catch (DataIntegrityViolationException ex) {

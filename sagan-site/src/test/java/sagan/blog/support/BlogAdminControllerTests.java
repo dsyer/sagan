@@ -1,7 +1,5 @@
 package sagan.blog.support;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import sagan.blog.Post;
 import sagan.blog.PostBuilder;
 import sagan.blog.PostCategory;
@@ -10,8 +8,6 @@ import sagan.site.blog.BlogService;
 import sagan.site.blog.PostForm;
 import sagan.support.DateFactory;
 import sagan.support.nav.PageableFactory;
-import sagan.team.MemberProfile;
-import sagan.team.support.TeamRepository;
 
 import java.security.Principal;
 import java.util.Arrays;
@@ -26,6 +22,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.validation.BindException;
 import org.springframework.validation.MapBindingResult;
@@ -34,8 +32,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BlogAdminControllerTests {
@@ -54,20 +51,17 @@ public class BlogAdminControllerTests {
     private Principal principal;
     private MapBindingResult bindingResult;
 
-    @Mock
-    private TeamRepository teamRepository;
-
     @Before
     public void setup() {
         bindingResult = new MapBindingResult(new HashMap<>(), "postForm");
-        principal = () -> "12345";
+        principal = () -> "username";
 
-        controller = new BlogAdminController(blogService, teamRepository, dateFactory);
+        controller = new BlogAdminController(blogService, dateFactory);
     }
 
     @Test
     public void dashboardShowsUsersPosts() {
-        controller = new BlogAdminController(blogService, teamRepository, dateFactory);
+        controller = new BlogAdminController(blogService, dateFactory);
 
         Page<Post> drafts = new PageImpl<>(
                 Arrays.asList(new Post("draft post", "body", PostCategory.ENGINEERING, PostFormat.MARKDOWN)),
@@ -108,11 +102,6 @@ public class BlogAdminControllerTests {
     @Test
     public void creatingABlogPostRecordsTheUser() {
         String username = "username";
-
-        MemberProfile member = new MemberProfile();
-        member.setUsername(username);
-
-        given(teamRepository.findById(12345L)).willReturn(member);
         PostForm postForm = new PostForm();
 
         given(blogService.addPost(eq(postForm), anyString())).willReturn(TEST_POST);
@@ -123,11 +112,6 @@ public class BlogAdminControllerTests {
     @Test
     public void redirectToEditPostAfterCreation() throws Exception {
         String username = "username";
-
-        MemberProfile member = new MemberProfile();
-        member.setUsername(username);
-
-        given(teamRepository.findById(12345L)).willReturn(member);
 
         PostForm postForm = new PostForm();
         postForm.setTitle("title");
@@ -144,11 +128,6 @@ public class BlogAdminControllerTests {
     @SuppressWarnings("unchecked")
     public void attemptingToCreateADuplicatePostReturnsToEditForm() throws Exception {
         String username = "username";
-
-        MemberProfile member = new MemberProfile();
-        member.setUsername(username);
-
-        given(teamRepository.findById(12345L)).willReturn(member);
 
         PostForm postForm = new PostForm();
         postForm.setTitle("title");

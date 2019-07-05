@@ -16,12 +16,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -50,10 +53,16 @@ abstract class MvcConfig extends WebMvcConfigurerAdapter {
 		return new ViewRenderingHelper();
 	}
 
-	@Bean
-	public StaticPagePathFinder staticPagePathFinder(ResourcePatternResolver resourcePatternResolver) {
-		return new StaticPagePathFinder(resourcePatternResolver);
-	}
+    @Bean
+    public StaticPagePathFinder staticPagePathFinder(ResourcePatternResolver resourcePatternResolver) {
+        return new StaticPagePathFinder(resourcePatternResolver);
+    }
+
+    @Bean
+    @Order(Ordered.HIGHEST_PRECEDENCE)
+    public ForwardedHeaderFilter forwardedHeaderFilter() {
+        return new ForwardedHeaderFilter();
+    }
 
 	@ExceptionHandler
 	@ResponseStatus(NOT_FOUND)

@@ -5,7 +5,6 @@ import sagan.team.MemberProfile;
 import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.social.github.api.GitHub;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,7 +39,7 @@ class TeamAdminController {
 
     @RequestMapping(value = "/admin/profile", method = { GET, HEAD })
     public String editProfileForm(Principal principal, Model model) {
-        MemberProfile profile = teamService.fetchMemberProfile(new Long(principal.getName()));
+        MemberProfile profile = teamService.fetchMemberProfile(principal.getName());
         model.addAttribute("profile", profile);
         model.addAttribute("formAction", "/admin/profile");
         return "admin/team/edit";
@@ -59,7 +58,7 @@ class TeamAdminController {
 
     @RequestMapping(value = "/admin/profile", method = PUT)
     public String saveProfile(Principal principal, MemberProfile profile) {
-        teamService.updateMemberProfile(new Long(principal.getName()), profile);
+        teamService.updateMemberProfile(principal.getName(), profile);
         return "redirect:/admin/profile";
     }
 
@@ -70,14 +69,9 @@ class TeamAdminController {
     }
 
     @RequestMapping(value = "/admin/team/github_import", method = POST)
-    public String importTeamMembersFromGithub(Principal principal) {
-        GitHub gitHub = getGitHub(principal);
-        teamImporter.importTeamMembers(gitHub);
+    public String importTeamMembersFromGithub() {
+        teamImporter.importTeamMembers();
         return "redirect:/admin/team";
     }
 
-    private GitHub getGitHub(Principal principal) {
-        // TODO: implement this?
-        throw new RuntimeException("Unable to obtain GitHub connection");
-    }
 }
