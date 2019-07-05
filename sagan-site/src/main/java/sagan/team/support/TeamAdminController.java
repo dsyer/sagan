@@ -5,9 +5,6 @@ import sagan.team.MemberProfile;
 import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.social.connect.Connection;
-import org.springframework.social.connect.ConnectionRepository;
-import org.springframework.social.connect.mem.InMemoryUsersConnectionRepository;
 import org.springframework.social.github.api.GitHub;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,14 +24,11 @@ class TeamAdminController {
 
     private final TeamService teamService;
     private final TeamImporter teamImporter;
-    private final InMemoryUsersConnectionRepository usersConnectionRepository;
 
     @Autowired
-    public TeamAdminController(TeamService teamService, TeamImporter teamImporter,
-                               InMemoryUsersConnectionRepository usersConnectionRepository) {
+    public TeamAdminController(TeamService teamService, TeamImporter teamImporter) {
         this.teamService = teamService;
         this.teamImporter = teamImporter;
-        this.usersConnectionRepository = usersConnectionRepository;
     }
 
     @RequestMapping(value = "/admin/team", method = { GET, HEAD })
@@ -83,13 +77,7 @@ class TeamAdminController {
     }
 
     private GitHub getGitHub(Principal principal) {
-        MemberProfile profile = teamService.fetchMemberProfile(new Long(principal.getName()));
-        String githubId = profile.getGithubId().toString();
-        ConnectionRepository connectionRepository = usersConnectionRepository.createConnectionRepository(githubId);
-        Connection<GitHub> connection = connectionRepository.findPrimaryConnection(GitHub.class);
-        if (connection != null) {
-            return connection.getApi();
-        }
+        // TODO: implement this?
         throw new RuntimeException("Unable to obtain GitHub connection");
     }
 }
