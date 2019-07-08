@@ -34,8 +34,8 @@ public class TeamService {
         this.mapper = mapper;
     }
 
-    public MemberProfile fetchMemberProfile(Long id) {
-        return teamRepository.findById(id);
+    public MemberProfile fetchMemberProfile(String id) {
+        return teamRepository.findByUsername(id);
     }
 
     public MemberProfile fetchMemberProfileUsername(String username) {
@@ -44,10 +44,6 @@ public class TeamService {
             profile = MemberProfile.NOT_FOUND;
         }
         return profile;
-    }
-
-    public void updateMemberProfile(Long id, MemberProfile profile) {
-        updateMemberProfile(profile, fetchMemberProfile(id));
     }
 
     public void updateMemberProfile(String username, MemberProfile updatedProfile) {
