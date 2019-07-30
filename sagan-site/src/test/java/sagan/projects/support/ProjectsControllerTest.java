@@ -1,5 +1,6 @@
 package sagan.projects.support;
 
+import sagan.SaganProfiles;
 import sagan.projects.Project;
 import sagan.projects.ProjectRelease;
 import sagan.site.guides.GettingStartedGuides;
@@ -22,7 +23,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -35,7 +36,7 @@ import static sagan.projects.ProjectRelease.ReleaseStatus.*;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers=ProjectsController.class)
-@TestPropertySource(properties = "spring.profiles.active=standalone")
+@ActiveProfiles(SaganProfiles.STANDALONE)
 public class ProjectsControllerTest {
     @MockBean
     private ProjectMetadataService projectMetadataService;
@@ -126,6 +127,12 @@ public class ProjectsControllerTest {
                 .andExpect(model().attribute("projects", Matchers.contains(this.springBoot, this.springData)))
                 .andExpect(model().attribute("projectStackOverflow",
                         "https://stackoverflow.com/questions/tagged/spring-data+or+spring-data-commons"));
+    }
+
+    @Test
+    public void showAllProjects() throws Exception {
+        this.mvc.perform(get("/projects"))
+                .andExpect(status().isOk());
     }
 
     @Test

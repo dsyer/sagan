@@ -42,19 +42,19 @@ class ProjectsController {
         this.topicals = topicals;
     }
 
-	@RequestMapping(method = { GET, HEAD })
-	public String listProjects(Model model) {
-    	this.projectMetadataService.getProjects()
-				.forEach(project -> model.addAttribute(project.getId().replaceAll("-", ""), project));
-		return "projects/index";
-	}
+    @RequestMapping(method = { GET, HEAD })
+    public String listProjects(Model model) {
+        this.projectMetadataService.getProjects()
+                .forEach(project -> model.addAttribute(project.getId().replaceAll("-", ""), project));
+        return "projects/index";
+    }
 
-	@RequestMapping(value = "/{projectName}", method = { GET, HEAD })
+    @RequestMapping(value = "/{projectName}", method = { GET, HEAD })
     public String showProject(Model model, @PathVariable String projectName) {
-		Project project = projectMetadataService.getProject(projectName);
-		if (project == null) {
-			throw new ResourceNotFoundException("project " + projectName);
-		}
+        Project project = projectMetadataService.getProject(projectName);
+        if (project == null) {
+            throw new ResourceNotFoundException("project " + projectName);
+        }
         List<Project> projects = this.projectMetadataService.getActiveTopLevelProjects();
         model.addAttribute("selectedProject", project);
         model.addAttribute("projectStackOverflow", stackOverflowUrl(project));
