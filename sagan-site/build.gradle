@@ -1,5 +1,5 @@
 plugins {
-	id 'org.springframework.boot' version '2.1.6.RELEASE'
+	id 'org.springframework.boot' version '2.2.0.BUILD-SNAPSHOT'
 	id 'java'
 	id "org.asciidoctor.convert" version "1.5.3"
 	id "com.gorylenko.gradle-git-properties" version "1.5.2"
@@ -13,6 +13,8 @@ sourceCompatibility = '1.8'
 
 repositories {
 	mavenCentral()
+	maven { url 'https://repo.spring.io/milestone' }
+	maven { url 'https://repo.spring.io/snapshot' }
 }
 
 bootJar {
